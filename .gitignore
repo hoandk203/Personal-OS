@@ -1,0 +1,56 @@
+# Dependencies & Package Managers
+node_modules/
+.pnpm-store/
+.yarn/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment & Secrets (NEVER commit secrets)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.cert
+
+# Build & Output Directories
+dist/
+build/
+out/
+.next/
+.turbo/
+.cache/
+coverage/
+*.tsbuildinfo
+.tsbuildinfo
+
+# IDE & Editor specific
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Database & Persistent storage (Local dev / SQLite / Prisma)
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Agent / AI local workspace caches & temp outputs
+.gemini/
+.claude/
+scratch/
+*.tmp
+*.temp
