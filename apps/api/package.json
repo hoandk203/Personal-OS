@@ -1,0 +1,39 @@
+{
+  "name": "@personal-os/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/server.js",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@personal-os/shared": "workspace:*",
+    "@personal-os/types": "workspace:*",
+    "@prisma/client": "^6.4.1",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.4",
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5",
+    "@vitest/coverage-v8": "^3.0.5",
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.2"
+  }
+}

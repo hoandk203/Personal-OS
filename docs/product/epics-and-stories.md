@@ -37,8 +37,10 @@ gantt
 
 ---
 
-# PHASE 0 — Foundation & Clean Architecture Core
+# PHASE 0 — Foundation & Clean Architecture Core `[COMPLETED ✅]`
 
+> **Trạng thái**: Đã hoàn thành (Xem kế hoạch và bằng chứng nghiệm thu tại [`docs/plans/completed/phase-0-foundation.md`](file:///home/shinki/projects/personal-os/docs/plans/completed/phase-0-foundation.md))
+>
 > **Mục tiêu**: Thiết lập Monorepo, cấu trúc phân tầng Clean Architecture (`core/domain`, `core/application`, `infrastructure`, `presentation`), Database relational + vector, Cache/Queue, Identity & Authentication, Event Schema và Audit Log Framework.
 
 ---

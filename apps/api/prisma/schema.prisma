@@ -1,0 +1,256 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+enum TaskStatus {
+  INBOX
+  PLANNED
+  IN_PROGRESS
+  BLOCKED
+  COMPLETED
+  ARCHIVED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+enum NotificationTier {
+  CRITICAL
+  IMPORTANT
+  INFORMATIONAL
+  SILENT
+}
+
+enum RecommendationType {
+  WORKLOAD_RISK
+  SCHEDULE_CONFLICT
+  DEADLINE_WARNING
+  ACTION_SUGGESTION
+  DEEP_WORK_OPPORTUNITY
+}
+
+enum SourceType {
+  MANUAL
+  GITHUB
+  GOOGLE_CALENDAR
+  GMAIL
+  SYSTEM
+}
+
+enum ActorType {
+  USER
+  AI_AGENT
+  SYSTEM
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  name            String
+  passwordHash    String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  projects        Project[]
+  tasks           Task[]
+  events          Event[]
+  decisions       Decision[]
+  recommendations Recommendation[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  integrations    Integration[]
+
+  @@map("users")
+}
+
+model Project {
+  id                String        @id @default(uuid())
+  userId            String
+  name              String
+  description       String?
+  status            ProjectStatus @default(ACTIVE)
+  deadline          DateTime?
+  tags              String[]      @default([])
+  progressScore     Float?        @default(0)
+  momentumScore     Float?        @default(0)
+  scheduleRiskScore Float?        @default(0)
+  blockerRiskScore  Float?        @default(0)
+  healthCalculatedAt DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks             Task[]
+  decisions         Decision[]
+
+  @@index([userId, status])
+  @@map("projects")
+}
+
+model Task {
+  id                       String      @id @default(uuid())
+  userId                   String
+  projectId                String?
+  title                    String
+  description              String?
+  status                   TaskStatus  @default(INBOX)
+  priority                 Priority    @default(MEDIUM)
+  dueAt                    DateTime?
+  estimatedDurationMinutes Int?
+  actualDurationMinutes    Int?
+  cognitiveLoad            Int?        @default(1)
+  sourceType               SourceType  @default(MANUAL)
+  sourceRefId              String?
+  sourceUrl                String?
+  completedAt              DateTime?
+  createdAt                DateTime    @default(now())
+  updatedAt                DateTime    @updatedAt
+
+  user                     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project                  Project?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([userId, dueAt])
+  @@map("tasks")
+}
+
+model Event {
+  id          String     @id @default(uuid())
+  userId      String
+  type        String
+  source      SourceType
+  sourceId    String
+  payload     Json       @default("{}")
+  occurredAt  DateTime   @default(now())
+  receivedAt  DateTime   @default(now())
+  processedAt DateTime?
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, occurredAt])
+  @@index([userId, type])
+  @@map("events")
+}
+
+model Decision {
+  id              String    @id @default(uuid())
+  userId          String
+  projectId       String?
+  title           String
+  context         String
+  options         String[]
+  chosenOption    String
+  reason          String
+  assumptions     String[]  @default([])
+  confidence      Float     @default(0.8)
+  expectedOutcome String
+  successCriteria String[]  @default([])
+  decisionDate    DateTime  @default(now())
+  reviewDate      DateTime?
+  actualOutcome   String?
+  evaluation      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project         Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, reviewDate])
+  @@map("decisions")
+}
+
+model Recommendation {
+  id                   String             @id @default(uuid())
+  userId               String
+  type                 RecommendationType
+  title                String
+  description          String
+  reason               String
+  evidence             String[]           @default([])
+  confidence           Float
+  impact               String             @default("MEDIUM")
+  urgency              String             @default("MEDIUM")
+  suggestedAction      Json?
+  requiresConfirmation Boolean            @default(true)
+  isApplied            Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isApplied])
+  @@map("recommendations")
+}
+
+model Notification {
+  id           String           @id @default(uuid())
+  userId       String
+  tier         NotificationTier @default(INFORMATIONAL)
+  title        String
+  message      String
+  resourceType String?
+  resourceId   String?
+  isRead       Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String    @id @default(uuid())
+  userId     String
+  actor      ActorType @default(USER)
+  action     String
+  resource   String
+  resourceId String?
+  before     Json?
+  after      Json?
+  reason     String?
+  timestamp  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, timestamp])
+  @@index([userId, resource])
+  @@map("audit_logs")
+}
+
+model Integration {
+  id                     String     @id @default(uuid())
+  userId                 String
+  provider               SourceType
+  encryptedAccessToken   String
+  encryptedRefreshToken  String?
+  tokenExpiresAt         DateTime?
+  scopes                 String[]   @default([])
+  metadata               Json       @default("{}")
+  isActive               Boolean    @default(true)
+  lastSyncedAt           DateTime?
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+
+  user                   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
+  @@map("integrations")
+}

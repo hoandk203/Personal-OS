@@ -1,0 +1,51 @@
+export enum TaskStatus {
+  INBOX = 'INBOX',
+  PLANNED = 'PLANNED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  BLOCKED = 'BLOCKED',
+  COMPLETED = 'COMPLETED',
+  ARCHIVED = 'ARCHIVED'
+}
+
+export enum Priority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT'
+}
+
+export enum ProjectStatus {
+  ACTIVE = 'ACTIVE',
+  PAUSED = 'PAUSED',
+  COMPLETED = 'COMPLETED',
+  ARCHIVED = 'ARCHIVED'
+}
+
+export enum NotificationTier {
+  CRITICAL = 'CRITICAL',
+  IMPORTANT = 'IMPORTANT',
+  INFORMATIONAL = 'INFORMATIONAL',
+  SILENT = 'SILENT'
+}
+
+export enum RecommendationType {
+  WORKLOAD_RISK = 'WORKLOAD_RISK',
+  SCHEDULE_CONFLICT = 'SCHEDULE_CONFLICT',
+  DEADLINE_WARNING = 'DEADLINE_WARNING',
+  ACTION_SUGGESTION = 'ACTION_SUGGESTION',
+  DEEP_WORK_OPPORTUNITY = 'DEEP_WORK_OPPORTUNITY'
+}
+
+export enum SourceType {
+  MANUAL = 'MANUAL',
+  GITHUB = 'GITHUB',
+  GOOGLE_CALENDAR = 'GOOGLE_CALENDAR',
+  GMAIL = 'GMAIL',
+  SYSTEM = 'SYSTEM'
+}
+
+export enum ActorType {
+  USER = 'USER',
+  AI_AGENT = 'AI_AGENT',
+  SYSTEM = 'SYSTEM'
+}

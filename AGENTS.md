@@ -12,6 +12,7 @@ validation material.
 - For a bounded change, inspect affected behavior and proof, implement, and
   validate. No control-plane operation is required.
 - **UI & Frontend Invariant**: Any UI change, styling, component creation, or web page MUST strictly adhere to `docs/design/DESIGN_TOKEN.md`. Do NOT introduce arbitrary hex colors, non-standard border-radius, or custom fonts outside the design token specification.
+- **Testing & Coverage Invariant**: All functional modules and services must have thorough automated testing. Unit tests and API integration tests are strictly required with test coverage **> 95%** (lines, branches, and functions). Code without passing tests and required coverage will not pass quality gates.
 - Use one `docs/plans/active/` file when work spans sessions, coordinates
   contributors, has dependencies, or needs recovery. Move it to
   `docs/plans/completed/` only after validation.

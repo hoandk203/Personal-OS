@@ -202,25 +202,30 @@
 
 | Token | Value | Rem | Usage |
 |:---|:---|:---|:---|
-| `DEFAULT` | `2px` | `0.125rem` | Default minimal rounding (inputs, inline chips) |
-| `lg` | `4px` | `0.25rem` | Standard card corners |
-| `xl` | `8px` | `0.5rem` | Larger containers, modals |
-| `full` | `12px` | `0.75rem` | "Rounded" pills (not circular) |
-| `button` | `4px` | — | CTA buttons, action buttons |
-| `card` | `4px` | — | Data cards |
+| `DEFAULT` | `12px` | `0.75rem` | Default smooth rounding (cards, panels, inputs) |
+| `sm` | `6px` | `0.375rem` | Micro tags, inline chips |
+| `lg` | `12px` | `0.75rem` | Standard card corners |
+| `xl` | `16px` | `1.0rem` | Larger containers, modals |
+| `full` | `9999px` | `9999px` | Fully rounded pills |
+| `button` | `12px` | `0.75rem` | CTA buttons, action buttons |
+| `card` | `12px` | `0.75rem` | Data cards, panels |
 
-> **Design Directive**: Romer uses the sharpest radius scale possible. No `rounded-2xl` or pill-radius on primary UI. Reserved only for marketing/landing callout sections.
+> **Design Directive**: Card & container corners use smooth 12px radius (`0.75rem`) for a modern, refined operational interface.
 
 ---
 
-## 6. Shadow & Elevation Tokens
+## 6. Shadow, Elevation & Glassmorphism Tokens
 
 | Token | CSS Value | Usage |
 |:---|:---|:---|
+| `glass-card` | `rgba(18, 19, 21, 0.65)` + `blur(16px)` + `1px solid rgba(255,255,255,0.07)` | Data cards, panels, modules |
+| `glass-sidebar` | `rgba(13, 14, 15, 0.7)` + `blur(20px)` + `1px solid rgba(255,255,255,0.06)` | Fixed persistent navigation rails |
+| `glass-header` | `rgba(10, 11, 12, 0.6)` + `blur(16px)` + `1px solid rgba(255,255,255,0.06)` | Top command bar |
+| `glass-ai-panel` | `linear-gradient(135deg, rgba(30, 34, 60, 0.45), rgba(16, 17, 24, 0.65))` + `blur(20px)` | High-value AI recommendation widgets |
 | `inner-glow` | `inset 0 1px 0 0 rgba(255,255,255,0.1)` | All `.card` surfaces — top-edge highlight |
-| `shadow-2xl` | Tailwind default | Hero dashboard mockup, FAB, floating glass cards |
+| `shadow-glass` | `0 8px 32px 0 rgba(0, 0, 0, 0.37)` | Floating glass depth on dark canvas |
 | `focus-ring` | `0 0 0 2px rgba(94, 107, 255, 0.2)` | Input/field focus state with brand glow |
-| `btn-shadow-glow` | `0 0 15px #5E6BFF` | Highlighted node in timeline/feature diagram |
+| `btn-shadow-glow` | `0 0 20px rgba(94, 107, 255, 0.35)` | Primary action CTA glowing depth |
 
 ---
 
@@ -312,12 +317,13 @@ export default {
         "brand-border-strong": "#232426",
       },
       borderRadius: {
-        DEFAULT: "0.125rem",
-        lg: "0.25rem",
-        xl: "0.5rem",
-        full: "0.75rem",
-        button: "4px",
-        card: "4px",
+        DEFAULT: "12px",
+        sm: "6px",
+        lg: "12px",
+        xl: "16px",
+        full: "9999px",
+        button: "12px",
+        card: "12px",
       },
       spacing: {
         xs: "4px",
@@ -363,7 +369,7 @@ export default {
 {
   "$schema": "https://tr.designtokens.org/format/",
   "name": "Romer Design Tokens",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "color": {
     "primary": { "$value": "#bec2ff", "$type": "color" },
     "primaryContainer": { "$value": "#7a85ff", "$type": "color" },
@@ -412,10 +418,13 @@ export default {
     "marginSafe": { "$value": "32px", "$type": "dimension" }
   },
   "borderRadius": {
-    "default": { "$value": "2px", "$type": "dimension" },
-    "lg": { "$value": "4px", "$type": "dimension" },
-    "xl": { "$value": "8px", "$type": "dimension" },
-    "full": { "$value": "12px", "$type": "dimension" }
+    "default": { "$value": "12px", "$type": "dimension" },
+    "sm": { "$value": "6px", "$type": "dimension" },
+    "lg": { "$value": "12px", "$type": "dimension" },
+    "xl": { "$value": "16px", "$type": "dimension" },
+    "full": { "$value": "9999px", "$type": "dimension" },
+    "card": { "$value": "12px", "$type": "dimension" },
+    "button": { "$value": "12px", "$type": "dimension" }
   }
 }
 ```

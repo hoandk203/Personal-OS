@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@personal-os/types": ["packages/types/src/index.ts"],
+      "@personal-os/shared": ["packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src/**/*", "apps/*/src/**/*", "tests/**/*"]
+}

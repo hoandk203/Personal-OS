@@ -1,0 +1,30 @@
+{
+  "name": "personal-os-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "web:dev": "pnpm --filter @personal-os/web dev",
+    "web:build": "pnpm --filter @personal-os/web build",
+    "api:dev": "pnpm --filter @personal-os/api dev",
+    "api:build": "pnpm --filter @personal-os/api build",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @personal-os/api prisma:migrate"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "prettier": "^3.5.0",
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5",
+    "@vitest/coverage-v8": "^3.0.5"
+  },
+  "packageManager": "pnpm@11.23.0"
+}
