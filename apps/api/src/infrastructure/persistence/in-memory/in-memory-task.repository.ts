@@ -17,6 +17,11 @@ export class InMemoryTaskRepository implements TaskRepositoryPort {
     return null;
   }
 
+  async findByIds(ids: string[], userId: string): Promise<TaskEntity[]> {
+    const idSet = new Set(ids);
+    return Array.from(this.tasks.values()).filter(t => t.userId === userId && idSet.has(t.id));
+  }
+
   async findMany(filter: TaskFilterOptions): Promise<TaskEntity[]> {
     let result = Array.from(this.tasks.values()).filter(t => t.userId === filter.userId);
 
@@ -26,6 +31,23 @@ export class InMemoryTaskRepository implements TaskRepositoryPort {
 
     if (filter.status !== undefined) {
       result = result.filter(t => t.status === filter.status);
+    }
+
+    if (filter.priority !== undefined) {
+      result = result.filter(t => t.priority === filter.priority);
+    }
+
+    if (filter.minCognitiveLoad !== undefined) {
+      result = result.filter(t => t.cognitiveLoad >= filter.minCognitiveLoad!);
+    }
+
+    if (filter.maxCognitiveLoad !== undefined) {
+      result = result.filter(t => t.cognitiveLoad <= filter.maxCognitiveLoad!);
+    }
+
+    if (filter.search) {
+      const q = filter.search.toLowerCase();
+      result = result.filter(t => t.title.toLowerCase().includes(q) || (t.description && t.description.toLowerCase().includes(q)));
     }
 
     if (filter.dueBefore !== undefined) {

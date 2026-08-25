@@ -4,17 +4,17 @@ Hệ thống Multi-Agent được thiết kế theo mô hình **Hub-and-Spoke (O
 
 ---
 
-## 1. Danh sách Sub-Agents & Vai trò
+## 1. Danh sách Sub-Agents & Cấu hình Model Tier
 
-| STT | Agent | Tên File Config / System Prompt | Vai trò chính |
-|---|---|---|---|
-| 0 | **Orchestrator Agent** | `00_orchestrator.md` | Điều phối chính, phân rã công việc, quản lý luồng handoff, theo dõi tiến độ & giải quyết xung đột |
-| 1 | **Reader Agent** | `01_reader.md` | Trích xuất yêu cầu, đọc hiểu context dự án, phân tích code hiện tại, tóm tắt specification |
-| 2 | **Architect & Data Contract Designer** | `02_architect_contract.md` | Thiết kế kiến trúc tổng thể, ERD/Database Schema, API Contracts (OpenAPI/TypeScript Types), Event Schemas |
-| 3 | **Backend Developer Agent (BE)** | `03_backend.md` | Lập trình Backend (Controllers, Services, Repositories, Database Migrations, API Endpoints) |
-| 4 | **Frontend Developer Agent (FE)** | `04_frontend.md` | Lập trình Frontend (UI Components, State Management, Page Layouts, Styling, API Integration) |
-| 5 | **Reviewer & Tester Agent** | `05_reviewer_tester.md` | Review chất lượng code, viết Unit/Integration Tests, kiểm tra bảo mật, cấp duyệt Quality Gate |
-| 6 | **Documentation & Changelog Agent** | `06_docs_changelog.md` | Cập nhật tài liệu kỹ thuật (Architecture Docs, API Specs, User Manual) và ghi vết `CHANGELOG.md` |
+| STT | Agent | Tên File Config / System Prompt | Vai trò chính | Recommended Model & Reasoning Tier |
+|---|---|---|---|---|
+| 0 | **Orchestrator Agent** | `00_orchestrator.md` | Điều phối chính, phân rã công việc, quản lý luồng handoff, theo dõi tiến độ & giải quyết xung đột | **Gemini 3.7 Flash (High Thinking)** |
+| 1 | **Reader Agent** | `01_reader.md` | Trích xuất yêu cầu, đọc hiểu context dự án, phân tích code hiện tại, tóm tắt specification | **Gemini 3.7 Flash (Low Thinking)** |
+| 2 | **Architect & Data Contract Designer** | `02_architect_contract.md` | Thiết kế kiến trúc tổng thể, ERD/Database Schema, API Contracts (OpenAPI/TypeScript Types), Event Schemas | **Gemini 3.7 Flash (High Thinking)** |
+| 3 | **Backend Developer Agent (BE)** | `03_backend.md` | Lập trình Backend (Controllers, Services, Repositories, Database Migrations, API Endpoints) | **Gemini 3.7 Flash (Medium Thinking)** |
+| 4 | **Frontend Developer Agent (FE)** | `04_frontend.md` | Lập trình Frontend (UI Components, State Management, Page Layouts, Styling, API Integration) | **Gemini 3.7 Flash (Medium Thinking)** |
+| 5 | **Reviewer & Tester Agent** | `05_reviewer_tester.md` | Review chất lượng code, viết Unit/Integration Tests, kiểm tra bảo mật, cấp duyệt Quality Gate | **Gemini 3.7 Flash (High Thinking)** |
+| 6 | **Documentation & Changelog Agent** | `06_docs_changelog.md` | Cập nhật tài liệu kỹ thuật (Architecture Docs, API Specs, User Manual) và ghi vết `CHANGELOG.md` | **Gemini 3.7 Flash (Low Thinking)** |
 
 ---
 

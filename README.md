@@ -107,16 +107,17 @@ pnpm test:coverage
 
 ### Coverage Report
 - **Statements**: `97.83%` (Target: > 95%)
-- **Branches**: `95.50%` (Target: > 95%)
+- **Statements**: `99.03%` (Target: > 95%)
+- **Branches**: `95.24%` (Target: > 95%)
 - **Functions**: `100.00%` (Target: > 95%)
-- **Lines**: `97.83%` (Target: > 95%)
+- **Lines**: `99.03%` (Target: > 95%)
 
 ---
 
 ## 🗺️ Product Roadmap
 
 - [x] **Phase 0: Foundation & Clean Architecture Core** (Completed)
-- [ ] **Phase 1: Productivity Core (MVP)** (Projects, Tasks, GitHub & Calendar Adapters, Command Center)
+- [x] **Phase 1: Productivity Core (MVP)** (Projects, Tasks, GitHub & Calendar Adapters, Command Center)
 - [ ] **Phase 2: AI Intelligence & Daily Decision Support** (RAG, Context Engine, Explainable Recommendations)
 - [ ] **Phase 3: Automation Engine & Tiered Notifications** (Event Triggers, Telegram/Slack/Email alerts)
 - [ ] **Phase 4: Work Memory, Knowledge Graph & Decisions** (Decision Journal, Entity Linking)
@@ -131,6 +132,8 @@ For detailed documentation, refer to [`docs/README.md`](file:///home/shinki/proj
 - [Product & Technical Spec](file:///home/shinki/projects/personal-os/Personal%20OS%20%E2%80%94%20Product%20&%20Technical%20Specification%20v0.1.md)
 - [Clean Architecture Specification](file:///home/shinki/projects/personal-os/docs/product/architecture.md)
 - [Design Token System](file:///home/shinki/projects/personal-os/docs/design/DESIGN_TOKEN.md)
+- [Third-Party Connectors Setup Guide](file:///home/shinki/projects/personal-os/docs/guides/THIRD_PARTY_CONNECTORS_SETUP.md)
 - [Epics & User Stories Breakdown](file:///home/shinki/projects/personal-os/docs/product/epics-and-stories.md)
 - [ADR 0001: Adopt Clean Architecture](file:///home/shinki/projects/personal-os/docs/decisions/0001-adopt-clean-architecture.md)
-- [Phase 0 Completed Execution Plan](file:///home/shinki/projects/personal-os/docs/plans/completed/phase-0-foundation.md)
+- [Phase 1 Completed Execution Plan](file:///home/shinki/projects/personal-os/docs/plans/completed/phase-1-productivity-core.md)
+

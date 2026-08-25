@@ -1,4 +1,4 @@
-import { TaskStatus, Priority, ProjectStatus, NotificationTier, RecommendationType, SourceType, ActorType } from './enums.js';
+import { TaskStatus, Priority, ProjectStatus, NotificationTier, RecommendationType, SourceType, ActorType, ProjectHealthStatus, ScheduleBlockType } from './enums.js';
 
 export interface User {
   id: string;
@@ -13,7 +13,17 @@ export interface ProjectHealth {
   momentumScore: number;       // 0 - 100
   scheduleRiskScore: number;   // 0 - 100
   blockerRiskScore: number;    // 0 - 100
+  overallScore: number;        // 0 - 100
+  status: ProjectHealthStatus;
   lastCalculatedAt: Date;
+  breakdown?: {
+    totalTasks: number;
+    completedTasks: number;
+    inProgressTasks: number;
+    blockedTasks: number;
+    overdueTasks: number;
+    bottleneckPrs: number;
+  };
 }
 
 export interface Project {
@@ -141,4 +151,53 @@ export interface Integration {
   lastSyncedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface DailyFocus {
+  id: string;
+  userId: string;
+  date: string; // YYYY-MM-DD
+  taskIds: string[];
+  completedTaskIds: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ScheduleBlock {
+  id: string;
+  type: ScheduleBlockType;
+  title: string;
+  startTime: string; // HH:mm or ISO
+  endTime: string;   // HH:mm or ISO
+  durationMinutes: number;
+  isFocusBlock?: boolean;
+  taskId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ActivityTimelineItem {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  source: SourceType;
+  timestamp: Date;
+  metadata?: Record<string, unknown>;
+}
+
+export interface GitHubActivitySummary {
+  commitsCount: number;
+  openPrsCount: number;
+  mergedPrsCount: number;
+  bottleneckPrsCount: number;
+  issuesCount: number;
+  lastSyncedAt: Date | null;
+}
+
+export interface CalendarScheduleSummary {
+  totalMeetingsCount: number;
+  totalMeetingMinutes: number;
+  freeSlotsCount: number;
+  totalFreeMinutes: number;
+  lastSyncedAt: Date | null;
 }

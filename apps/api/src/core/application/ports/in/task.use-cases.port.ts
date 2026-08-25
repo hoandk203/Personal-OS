@@ -1,4 +1,4 @@
-import { CreateTaskDto, UpdateTaskDto, Task } from '@personal-os/types';
+import { CreateTaskDto, UpdateTaskDto, Task, TaskStatus } from '@personal-os/types';
 import { TaskFilterOptions } from '../out/task-repository.port.js';
 
 export interface ICreateTaskUseCase {
@@ -7,6 +7,10 @@ export interface ICreateTaskUseCase {
 
 export interface IUpdateTaskUseCase {
   execute(id: string, userId: string, dto: UpdateTaskDto): Promise<Task>;
+}
+
+export interface ITransitionTaskStatusUseCase {
+  execute(id: string, userId: string, newStatus: TaskStatus, reason?: string): Promise<Task>;
 }
 
 export interface IListTasksUseCase {
