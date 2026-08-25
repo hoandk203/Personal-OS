@@ -4,16 +4,18 @@ import {
   ICreateTaskUseCase,
   IUpdateTaskUseCase,
   IListTasksUseCase,
-  IDeleteTaskUseCase
+  IDeleteTaskUseCase,
+  ITransitionTaskStatusUseCase
 } from '../../../core/application/ports/in/task.use-cases.port.js';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware.js';
-import { TaskStatus } from '@personal-os/types';
+import { TaskStatus, Priority } from '@personal-os/types';
 
 export function createTaskRoutes(
   createTaskUseCase: ICreateTaskUseCase,
   updateTaskUseCase: IUpdateTaskUseCase,
   listTasksUseCase: IListTasksUseCase,
-  deleteTaskUseCase: IDeleteTaskUseCase
+  deleteTaskUseCase: IDeleteTaskUseCase,
+  transitionTaskStatusUseCase?: ITransitionTaskStatusUseCase
 ): Router {
   const router = Router();
 
@@ -47,12 +49,16 @@ export function createTaskRoutes(
   router.get('/', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.userId;
-      const { projectId, status, isOverdue } = req.query;
+      const { projectId, status, priority, minCognitiveLoad, maxCognitiveLoad, isOverdue, search } = req.query;
       const tasks = await listTasksUseCase.execute({
         userId,
         projectId: projectId as string | undefined,
         status: status as TaskStatus | undefined,
-        isOverdue: isOverdue === 'true'
+        priority: priority as Priority | undefined,
+        minCognitiveLoad: minCognitiveLoad ? Number(minCognitiveLoad) : undefined,
+        maxCognitiveLoad: maxCognitiveLoad ? Number(maxCognitiveLoad) : undefined,
+        isOverdue: isOverdue === 'true',
+        search: search as string | undefined
       });
       res.status(200).json({
         success: true,
@@ -74,6 +80,35 @@ export function createTaskRoutes(
         data: updated,
         timestamp: new Date().toISOString()
       });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.post('/:id/transition', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.userId;
+      const id = String(req.params.id);
+      const { status, reason } = req.body ?? {};
+      if (!status) {
+        throw new ValidationError('Target status is required for transition');
+      }
+
+      if (transitionTaskStatusUseCase) {
+        const updated = await transitionTaskStatusUseCase.execute(id, userId, status, reason);
+        res.status(200).json({
+          success: true,
+          data: updated,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        const updated = await updateTaskUseCase.execute(id, userId, { status });
+        res.status(200).json({
+          success: true,
+          data: updated,
+          timestamp: new Date().toISOString()
+        });
+      }
     } catch (err) {
       next(err);
     }

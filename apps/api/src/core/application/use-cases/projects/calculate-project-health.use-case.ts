@@ -17,8 +17,12 @@ export class CalculateProjectHealthUseCase implements ICalculateProjectHealthUse
       throw new NotFoundError('Project', projectId);
     }
 
-    const totalTasks = await this.taskRepo.countTotalByProject(projectId, userId);
-    const completedTasks = await this.taskRepo.countCompletedByProject(projectId, userId);
+    const tasks = await this.taskRepo.findMany({ userId, projectId });
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.status === 'COMPLETED').length;
+    const inProgressTasks = tasks.filter(t => t.status === 'IN_PROGRESS').length;
+    const blockedTasks = tasks.filter(t => t.status === 'BLOCKED').length;
+    const overdueTasks = tasks.filter(t => t.isOverdue()).length;
 
     let progressScore = 0;
     if (totalTasks > 0) {
@@ -43,15 +47,32 @@ export class CalculateProjectHealthUseCase implements ICalculateProjectHealthUse
       }
     }
 
+    // Blocker risk increases if there are blocked tasks or overdue tasks
+    let blockerRiskScore = 15;
+    if (blockedTasks > 0) {
+      blockerRiskScore += Math.min(50, blockedTasks * 25);
+    }
+    if (overdueTasks > 0) {
+      blockerRiskScore += Math.min(35, overdueTasks * 15);
+    }
+    blockerRiskScore = Math.min(100, blockerRiskScore);
+
     // Momentum score
-    const momentumScore = progressScore > 0 ? Math.min(100, progressScore * 1.2) : 10;
-    const blockerRiskScore = totalTasks > 0 && completedTasks === 0 && scheduleRiskScore > 50 ? 60 : 20;
+    const momentumScore = progressScore > 0 ? Math.min(100, Math.round(progressScore * 1.1 + (inProgressTasks * 5))) : 10;
 
     const healthVo = new ProjectHealthVO({
       progressScore,
       momentumScore,
       scheduleRiskScore,
-      blockerRiskScore
+      blockerRiskScore,
+      breakdown: {
+        totalTasks,
+        completedTasks,
+        inProgressTasks,
+        blockedTasks,
+        overdueTasks,
+        bottleneckPrs: 0
+      }
     });
 
     project.updateHealth(healthVo);

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ProjectHealthVO } from '../../../src/core/domain/value-objects/project-health.vo.js';
 import { DomainError } from '@personal-os/shared';
+import { ProjectHealthStatus } from '@personal-os/types';
 
 describe('ProjectHealthVO Value Object', () => {
   it('should create valid project health VO with rounded scores', () => {
@@ -25,13 +26,17 @@ describe('ProjectHealthVO Value Object', () => {
   });
 
   it('should evaluate overall health status properly', () => {
-    const healthy = new ProjectHealthVO({ progressScore: 90, momentumScore: 80, scheduleRiskScore: 20, blockerRiskScore: 10 });
-    expect(healthy.getOverallHealthStatus()).toBe('HEALTHY');
+    const excellent = new ProjectHealthVO({ progressScore: 90, momentumScore: 80, scheduleRiskScore: 20, blockerRiskScore: 10 });
+    expect(excellent.getOverallHealthStatus()).toBe(ProjectHealthStatus.EXCELLENT);
+    expect(excellent.overallScore).toBeGreaterThanOrEqual(80);
+
+    const healthy = new ProjectHealthVO({ progressScore: 65, momentumScore: 65, scheduleRiskScore: 30, blockerRiskScore: 20 });
+    expect(healthy.getOverallHealthStatus()).toBe(ProjectHealthStatus.HEALTHY);
 
     const needsAttention = new ProjectHealthVO({ progressScore: 50, momentumScore: 20, scheduleRiskScore: 45, blockerRiskScore: 10 });
-    expect(needsAttention.getOverallHealthStatus()).toBe('NEEDS_ATTENTION');
+    expect(needsAttention.getOverallHealthStatus()).toBe(ProjectHealthStatus.NEEDS_ATTENTION);
 
     const atRisk = new ProjectHealthVO({ progressScore: 30, momentumScore: 40, scheduleRiskScore: 75, blockerRiskScore: 80 });
-    expect(atRisk.getOverallHealthStatus()).toBe('AT_RISK');
+    expect(atRisk.getOverallHealthStatus()).toBe(ProjectHealthStatus.AT_RISK);
   });
 });

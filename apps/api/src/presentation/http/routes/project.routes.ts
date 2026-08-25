@@ -37,7 +37,8 @@ export function createProjectRoutes(
   router.get('/', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.userId;
-      const projects = await projectRepo.findMany(userId);
+      const { status } = req.query;
+      const projects = await projectRepo.findMany(userId, status as any);
       res.status(200).json({
         success: true,
         data: projects,
@@ -56,6 +57,31 @@ export function createProjectRoutes(
       res.status(200).json({
         success: true,
         data: updated,
+        timestamp: new Date().toISOString()
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.delete('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.userId;
+      const id = String(req.params.id);
+      const deleted = await projectRepo.delete(id, userId);
+      if (!deleted) {
+        res.status(404).json({
+          success: false,
+          statusCode: 404,
+          error: 'NOT_FOUND',
+          message: `Project with id '${id}' not found`,
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        data: { id, deleted: true },
         timestamp: new Date().toISOString()
       });
     } catch (err) {

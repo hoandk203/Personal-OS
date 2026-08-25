@@ -187,3 +187,137 @@ describe('Branch Coverage Expansion Suite', () => {
     expect(minimalAudit.id).toBe('a-min');
   });
 });
+
+describe('Phase 1 Detailed Branch Coverage Suite', () => {
+  it('should test ProjectHealthVO constructor with explicit overallScore and status', async () => {
+    const { ProjectHealthVO } = await import('../../../src/core/domain/value-objects/project-health.vo.js');
+    const customHealth = new ProjectHealthVO({
+      progressScore: 80,
+      momentumScore: 80,
+      scheduleRiskScore: 20,
+      blockerRiskScore: 20,
+      overallScore: 92,
+      status: 'EXCELLENT' as any
+    });
+    expect(customHealth.overallScore).toBe(92);
+    expect(customHealth.getOverallHealthStatus()).toBe('EXCELLENT');
+  });
+
+  it('should test InMemoryTaskRepository count functions and delete non-existing task', async () => {
+    const repo = new InMemoryTaskRepository();
+    const task = new TaskEntity('t-c1', 'u-1', 'p-1', 'Count Task', null, TaskStatus.COMPLETED);
+    await repo.save(task);
+
+    const completed = await repo.countCompletedByProject('p-1', 'u-1');
+    expect(completed).toBe(1);
+
+    const total = await repo.countTotalByProject('p-1', 'u-1');
+    expect(total).toBe(1);
+
+    const deleted = await repo.delete('non-existent', 'u-1');
+    expect(deleted).toBe(false);
+  });
+
+  it('should test router error handlers with mock throwing use cases', async () => {
+    const throwingUseCase = {
+      execute: vi.fn().mockRejectedValue(new Error('Simulated route failure'))
+    };
+
+    const { createTaskRoutes } = await import('../../../src/presentation/http/routes/task.routes.js');
+    const { createProjectRoutes } = await import('../../../src/presentation/http/routes/project.routes.js');
+    const { createTodayRoutes } = await import('../../../src/presentation/http/routes/today.routes.js');
+    const { createConnectorRoutes } = await import('../../../src/presentation/http/routes/connector.routes.js');
+    const express = (await import('express')).default;
+    const { errorHandlerMiddleware } = await import('../../../src/presentation/http/middlewares/error-handler.middleware.js');
+
+    const app = express();
+    app.use(express.json());
+
+    // Fake auth middleware
+    app.use((req: any, _res: any, next: any) => {
+      req.user = { userId: 'u-1', email: 'u1@test.com' };
+      next();
+    });
+
+    app.use('/test/tasks', createTaskRoutes(
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any
+    ));
+
+    app.use('/test/projects', createProjectRoutes(
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any,
+      {
+        findMany: vi.fn().mockRejectedValue(new Error('err')),
+        findById: vi.fn().mockRejectedValue(new Error('err')),
+        save: vi.fn().mockRejectedValue(new Error('err')),
+        delete: vi.fn().mockRejectedValue(new Error('err'))
+      } as any
+    ));
+
+    app.use('/test/today', createTodayRoutes(
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any,
+      throwingUseCase as any
+    ));
+
+    app.use('/test/connectors', createConnectorRoutes(
+      throwingUseCase as any,
+      throwingUseCase as any
+    ));
+
+    app.use(errorHandlerMiddleware as any);
+
+    // Call routes to exercise catch blocks
+    await request(app).post('/test/tasks').send({ title: 'T' }).expect(500);
+    await request(app).get('/test/tasks').expect(500);
+    await request(app).patch('/test/tasks/t-1').send({ title: 'New' }).expect(500);
+    await request(app).post('/test/tasks/t-1/transition').send({ status: 'PLANNED' }).expect(500);
+    await request(app).delete('/test/tasks/t-1').expect(500);
+
+    await request(app).post('/test/projects').send({ name: 'P' }).expect(500);
+    await request(app).get('/test/projects').expect(500);
+    await request(app).patch('/test/projects/p-1').send({ name: 'New' }).expect(500);
+    await request(app).get('/test/projects/p-1').expect(500);
+    await request(app).post('/test/projects/p-1/calculate-health').expect(500);
+    await request(app).delete('/test/projects/p-1').expect(500);
+
+    await request(app).get('/test/today/focus').expect(500);
+    await request(app).post('/test/today/focus').send({ taskIds: ['t-1'] }).expect(500);
+    await request(app).post('/test/today/focus/toggle').send({ taskId: 't-1' }).expect(500);
+    await request(app).get('/test/today/schedule').expect(500);
+    await request(app).get('/test/today/timeline').expect(500);
+
+    await request(app).post('/test/connectors/github/sync').send({}).expect(500);
+    await request(app).post('/test/connectors/calendar/sync').send({}).expect(500);
+  });
+
+  it('should test activity timeline with minimal event payloads and fallback tasks with missing source', async () => {
+    const { EventEntity } = await import('../../../src/core/domain/entities/event.entity.js');
+    const { GetActivityTimelineUseCase } = await import('../../../src/core/application/use-cases/today/get-activity-timeline.use-case.js');
+    const { InMemoryEventRepository } = await import('../../../src/infrastructure/persistence/in-memory/in-memory-event.repository.js');
+
+    const eventRepo = new InMemoryEventRepository();
+    // Events with minimal empty payload to test fallback string branches
+    await eventRepo.save(new EventEntity('e-min-1', 'u-1', 'github.commit.created', SourceType.GITHUB, '1', {}));
+    await eventRepo.save(new EventEntity('e-min-2', 'u-1', 'github.pull_request.opened', SourceType.GITHUB, '2', {}));
+    await eventRepo.save(new EventEntity('e-min-3', 'u-1', 'calendar.meeting', SourceType.GOOGLE_CALENDAR, '3', {}));
+    await eventRepo.save(new EventEntity('e-min-4', 'u-1', 'task.created', SourceType.MANUAL, '4', {}));
+
+    const taskRepo = new InMemoryTaskRepository();
+    // Task without explicit source
+    const rawTask = new TaskEntity('t-raw', 'u-1', null, 'Raw Task', null, TaskStatus.INBOX);
+    (rawTask as any).source = null;
+    await taskRepo.save(rawTask);
+
+    const timelineUseCase = new GetActivityTimelineUseCase(eventRepo, taskRepo);
+    const res = await timelineUseCase.execute('u-1', 10);
+    expect(res.items.length).toBe(5);
+  });
+});

@@ -87,3 +87,66 @@ export interface QueryAuditLogsDto {
   limit?: number;
   offset?: number;
 }
+
+export interface TransitionTaskStatusDto {
+  status: TaskStatus;
+  reason?: string;
+}
+
+export interface FilterTasksDto {
+  projectId?: string;
+  status?: TaskStatus;
+  priority?: Priority;
+  minCognitiveLoad?: number;
+  maxCognitiveLoad?: number;
+  isOverdue?: boolean;
+  search?: string;
+}
+
+export interface SetDailyFocusDto {
+  date?: string; // YYYY-MM-DD (defaults to today)
+  taskIds: string[]; // Max 3
+}
+
+export interface ToggleTaskFocusDto {
+  taskId: string;
+  date?: string;
+}
+
+export interface DailyFocusResponseDto {
+  date: string;
+  focusTaskIds: string[];
+  completedTaskIds: string[];
+  tasks: any[];
+  completedCount: number;
+  totalCount: number;
+  completionRate: number; // 0 - 100
+}
+
+export interface DailyScheduleResponseDto {
+  date: string;
+  blocks: any[];
+  totalMeetingMinutes: number;
+  totalDeepWorkMinutes: number;
+  totalFreeMinutes: number;
+}
+
+export interface ActivityTimelineResponseDto {
+  items: any[];
+  total: number;
+}
+
+export interface SyncExternalSourceDto {
+  source: SourceType;
+  mockFallback?: boolean;
+  options?: Record<string, unknown>;
+}
+
+export interface ConnectorSyncResultDto {
+  source: SourceType;
+  success: boolean;
+  itemsSynced: number;
+  warnings: string[];
+  syncedAt: string;
+  summary: Record<string, unknown>;
+}

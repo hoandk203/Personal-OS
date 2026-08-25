@@ -1,7 +1,13 @@
 import { CreateProjectDto, UpdateProjectDto, Project, ProjectStatus } from '@personal-os/types';
 import { ProjectEntity } from '../../../domain/entities/project.entity.js';
 import { ProjectCreatedEvent } from '../../../domain/events/domain-events.js';
-import { ICreateProjectUseCase, IUpdateProjectUseCase } from '../../ports/in/project.use-cases.port.js';
+import {
+  ICreateProjectUseCase,
+  IUpdateProjectUseCase,
+  IListProjectsUseCase,
+  IGetProjectByIdUseCase,
+  IDeleteProjectUseCase
+} from '../../ports/in/project.use-cases.port.js';
 import { ProjectRepositoryPort } from '../../ports/out/project-repository.port.js';
 import { EventBusPort } from '../../ports/out/event-bus.port.js';
 import { NotFoundError } from '@personal-os/shared';
@@ -50,5 +56,33 @@ export class UpdateProjectUseCase implements IUpdateProjectUseCase {
     if (dto.tags !== undefined) project.tags = dto.tags;
 
     return this.projectRepo.save(project);
+  }
+}
+
+export class ListProjectsUseCase implements IListProjectsUseCase {
+  constructor(private readonly projectRepo: ProjectRepositoryPort) {}
+
+  async execute(userId: string, status?: ProjectStatus): Promise<Project[]> {
+    return this.projectRepo.findMany(userId, status);
+  }
+}
+
+export class GetProjectByIdUseCase implements IGetProjectByIdUseCase {
+  constructor(private readonly projectRepo: ProjectRepositoryPort) {}
+
+  async execute(id: string, userId: string): Promise<Project> {
+    const project = await this.projectRepo.findById(id, userId);
+    if (!project) {
+      throw new NotFoundError('Project', id);
+    }
+    return project;
+  }
+}
+
+export class DeleteProjectUseCase implements IDeleteProjectUseCase {
+  constructor(private readonly projectRepo: ProjectRepositoryPort) {}
+
+  async execute(id: string, userId: string): Promise<boolean> {
+    return this.projectRepo.delete(id, userId);
   }
 }

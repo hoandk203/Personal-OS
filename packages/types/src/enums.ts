@@ -49,3 +49,17 @@ export enum ActorType {
   AI_AGENT = 'AI_AGENT',
   SYSTEM = 'SYSTEM'
 }
+
+export enum ProjectHealthStatus {
+  EXCELLENT = 'EXCELLENT',
+  HEALTHY = 'HEALTHY',
+  NEEDS_ATTENTION = 'NEEDS_ATTENTION',
+  AT_RISK = 'AT_RISK'
+}
+
+export enum ScheduleBlockType {
+  MEETING = 'MEETING',
+  DEEP_WORK = 'DEEP_WORK',
+  FOCUS_TASK = 'FOCUS_TASK',
+  FREE_SLOT = 'FREE_SLOT'
+}

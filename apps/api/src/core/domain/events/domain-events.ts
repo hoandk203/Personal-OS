@@ -27,7 +27,8 @@ export class TaskStatusChangedEvent implements IDomainEvent {
     readonly aggregateId: string,
     readonly userId: string,
     readonly oldStatus: TaskStatus,
-    readonly newStatus: TaskStatus
+    readonly newStatus: TaskStatus,
+    readonly reason?: string
   ) {}
 }
 
@@ -39,5 +40,17 @@ export class ProjectCreatedEvent implements IDomainEvent {
     readonly aggregateId: string,
     readonly userId: string,
     readonly name: string
+  ) {}
+}
+
+export class DailyFocusSetEvent implements IDomainEvent {
+  readonly eventName = 'daily_focus.set';
+  readonly occurredAt = new Date();
+
+  constructor(
+    readonly aggregateId: string,
+    readonly userId: string,
+    readonly date: string,
+    readonly taskIds: string[]
   ) {}
 }
